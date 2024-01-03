@@ -6,6 +6,7 @@
 	import Input from '../../components/elements/input/input.component.svelte';
 	import axios from 'axios';
 	import { Session } from '../../session/session';
+	import { goto } from '$app/navigation';
 
 	const loginAccount: LoginAccount = new LoginAccount();
 	const validFields: any = getValidFields(loginAccount);
@@ -19,6 +20,7 @@
 				.then((res) => {
 					const token = res.data.data.token;
 					Session.setToken(token);
+					goto('/account')
 				})
 				.catch((e) => {
 					message = e.message;

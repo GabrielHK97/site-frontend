@@ -1,5 +1,5 @@
-import type { FullPath } from '../interfaces/full-path.interface';
-import { Page } from './page.class';
+import { Page } from "../../../src/classes/page.class";
+import type { FullPath } from "../../../src/interfaces/full-path.interface";
 
 export class BreadcrumbElement extends Page implements FullPath {
 	fullPath: string;

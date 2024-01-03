@@ -10,7 +10,7 @@ export class Session {
 	}
 
 	static async validate(): Promise<boolean> {
-		axios.defaults.baseURL = `http://${import.meta.env.VITE_API_URL}`;
+		axios.defaults.baseURL = `${import.meta.env.VITE_API_URL}`;
 		return axios
 			.get('/auth', {
 				headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }

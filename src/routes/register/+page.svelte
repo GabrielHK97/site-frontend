@@ -1,19 +1,19 @@
 <script lang="ts">
 	import '../../app.css';
-    import { RegisterAccount } from '../../classes/register-account.class';
-    import { InputTypes } from '../../components/elements/input/constants/input-types.constants';
+	import { RegisterAccount } from '../../classes/register-account.class';
+	import { InputTypes } from '../../components/elements/input/constants/input-types.constants';
 	import { getValidFields } from '../../components/src/functions/get-valid-fields.function';
 	import Input from '../../components/elements/input/input.component.svelte';
 	import axios from 'axios';
+	import { ValidatingFunctions } from '../../components/src/classes/validating-function.class';
 
 	const registerAccount: RegisterAccount = new RegisterAccount();
 	const validFields: any = getValidFields(registerAccount);
 	let message: string = '';
 
-	function register() {
+	function reg() {
 		if (validFields.isValid()) {
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-            console.log(registerAccount);
 			axios
 				.post('/account', registerAccount)
 				.then((res) => {
@@ -53,6 +53,7 @@
 				type={InputTypes.TEXT}
 				bind:value={registerAccount.email}
 				bind:valid={validFields.email}
+				validatingFunction={ValidatingFunctions.email}
 			/>
 			<Input
 				label="Name"
@@ -64,13 +65,14 @@
 			/>
 			<Input
 				label="Birthdate"
-				placeholder="birthdate"
 				className="input input-sm input-bordered rounded-lg"
 				type={InputTypes.DATE}
 				bind:value={registerAccount.birthdate}
 				bind:valid={validFields.birthdate}
 			/>
-			<button class="btn btn-primary btn-sm w-24 text-neutral mt-1" on:click={register}>Register</button>
+			<button class="btn btn-primary btn-sm w-24 text-neutral mt-1" on:click={reg}
+				>Register</button
+			>
 			{message}
 		</div>
 	</div>

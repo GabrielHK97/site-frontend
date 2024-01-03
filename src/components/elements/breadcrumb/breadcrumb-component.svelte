@@ -6,7 +6,7 @@
 	export let pageName: string;
 	export let breadcrumbElements: BreadcrumbElement[] = [];
 
-	const currentBreadcrumb: BreadcrumbElement[] = [];
+	let currentBreadcrumb: BreadcrumbElement[] = [];
 	const fullPaths: string[] = [];
 
 	function setFullPaths(): void {
@@ -26,8 +26,8 @@
 			})[0];
 			currentBreadcrumb.push(breadcrumbElement);
 		});
-		//breadcrumbElements = [...breadcrumbElements];
 		pageName = currentBreadcrumb[currentBreadcrumb.length - 1]?.name;
+		currentBreadcrumb = [...currentBreadcrumb];
 	}
 
 	onMount(() => {
@@ -41,6 +41,7 @@
 >
 	{#each currentBreadcrumb as breadcrumbElement, i}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div
 			class="w-fit hover:underline"
 			on:click={() => {

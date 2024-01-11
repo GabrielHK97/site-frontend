@@ -16,11 +16,9 @@
 		if (validFields.isValid()) {
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
-				.post('/auth/login', loginAccount)
+				.post('/auth/login', loginAccount, { withCredentials: true })
 				.then((res) => {
-					const token = res.data.data.token;
-					Session.setToken(token);
-					goto('/account')
+					goto('/account');
 				})
 				.catch((e) => {
 					message = e.message;

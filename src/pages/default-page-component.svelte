@@ -15,7 +15,6 @@
 	});
 
     function signOut() {
-		Session.destroyToken();
 		goto('/');
 	}
 </script>

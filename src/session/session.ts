@@ -1,24 +1,17 @@
 import axios from 'axios';
+import Cookie from 'js-cookie';
 
 export class Session {
-	static setToken(token: string): void {
-		localStorage.setItem('token', token);
-	}
-
-	static destroyToken() {
-		localStorage.removeItem('token');
-	}
 
 	static async validate(): Promise<boolean> {
 		axios.defaults.baseURL = `${import.meta.env.VITE_API_URL}`;
 		return axios
-			.get('/auth', {
-				headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-			})
+			.get('/auth', { withCredentials: true })
 			.then(() => {
 				return true;
 			})
-			.catch(() => {
+			.catch((e) => {
+				console.log(e);
 				return false;
 			});
 	}

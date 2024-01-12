@@ -6,7 +6,7 @@
 	import { breadcrumb, navbar } from '../hooks.client';
 	import BreadcrumbComponent from '../components/elements/breadcrumb/breadcrumb-component.svelte';
 
-    export let pageName: string = '';
+	export let pageName: string = '';
 
 	onMount(async () => {
 		if (!(await Session.validate())) {
@@ -14,14 +14,16 @@
 		}
 	});
 
-    function signOut() {
+	function signOut() {
 		goto('/');
 	}
 </script>
 
 <div class="flex h-screen min-h-screen w-screen flex-row items-center justify-center">
-	<NavbarComponent navbarElements={$navbar}>
-		
+	<NavbarComponent
+		class="flex h-full w-48 min-w-[192px] flex-col items-center justify-center"
+		navbarElements={$navbar}
+	>
 		<div slot="footer" class="flex w-full items-center justify-center p-2">
 			<button class="btn btn-sm btn-primary h-10 text-xs lg:w-full" on:click={signOut}
 				>sign out</button

@@ -16,7 +16,7 @@ export class ValidatingFunctions {
 	}
 
 	static email(value: any): boolean {
-		return(ValidatingFunctions.notNull(value) && validateEmail(value));
+		return ValidatingFunctions.notNull(value) && validateEmail(value);
 	}
 }
 
@@ -96,5 +96,5 @@ function validateCNPJ(cnpj: string): boolean {
 }
 
 function validateEmail(email: string): boolean {
-	return email.includes('@') && email.includes('.com')
+	return email.includes('@') && email.includes('.') && email.split('.')[1] !== '';
 }

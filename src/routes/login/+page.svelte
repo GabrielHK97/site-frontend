@@ -18,7 +18,7 @@
 			axios
 				.post('/auth/login', loginAccount, { withCredentials: true })
 				.then((res) => {
-					goto('/account');
+					goto('/panel');
 				})
 				.catch((e) => {
 					message = e.message;

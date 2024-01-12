@@ -11,7 +11,7 @@
 	const validFields: any = getValidFields(registerAccount);
 	let message: string = '';
 
-	function reg() {
+	function register() {
 		if (validFields.isValid()) {
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
@@ -70,7 +70,7 @@
 				bind:value={registerAccount.birthdate}
 				bind:valid={validFields.birthdate}
 			/>
-			<button class="btn btn-primary btn-sm w-24 text-neutral mt-1" on:click={reg}
+			<button class="btn btn-primary btn-sm w-24 text-neutral mt-1" on:click={register}
 				>Register</button
 			>
 			{message}

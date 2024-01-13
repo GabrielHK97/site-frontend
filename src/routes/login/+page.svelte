@@ -1,19 +1,19 @@
 <script lang="ts">
 	import '../../app.css';
-	import { LoginAccount } from '../../classes/login-account.class';
-	import { InputTypes } from '../../components/elements/input/constants/input-types.constants';
-	import { getValidFields } from '../../components/src/functions/get-valid-fields.function';
-	import Input from '../../components/elements/input/input.component.svelte';
+
 	import axios from 'axios';
-	import { Session } from '../../session/session';
 	import { goto } from '$app/navigation';
+	import { LoginAccount } from '../../classes/login-account.class';
 
 	const loginAccount: LoginAccount = new LoginAccount();
-	const validFields: any = getValidFields(loginAccount);
 	let message: string = '';
 
+	function isValid() {
+		return loginAccount.username && loginAccount.password;
+	}
+
 	function login() {
-		if (validFields.isValid()) {
+		if (isValid()) {
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
 				.post('/auth/login', loginAccount, { withCredentials: true })
@@ -21,7 +21,7 @@
 					goto('/panel');
 				})
 				.catch((e) => {
-					message = e.message;
+					message = e.response.data.message;
 				});
 		}
 	}
@@ -31,22 +31,14 @@
 	<div class="card w-96 bg-base-300 shadow-xl">
 		<div class="card-body justify-center items-center">
 			<div class="card-title justify-center items-center text-md">Login</div>
-			<Input
-				label="Username"
-				placeholder="username"
-				className="input input-sm input-bordered rounded-lg"
-				type={InputTypes.TEXT}
-				bind:value={loginAccount.username}
-				bind:valid={validFields.username}
-			/>
-			<Input
-				label="Password"
-				placeholder="password"
-				className="input input-sm input-bordered rounded-lg"
-				type={InputTypes.PASSWORD}
-				bind:value={loginAccount.password}
-				bind:valid={validFields.password}
-			/>
+			<label class="flex flex-col space-y-1 w-48">
+				<div class="text-sm">Username</div>
+				<input class="input input-sm w-full" bind:value={loginAccount.username} />
+			</label>
+			<label class="flex flex-col space-y-1 w-48">
+				<div class="text-sm">Password</div>
+				<input class="input input-sm w-full" type="password" bind:value={loginAccount.password} />
+			</label>
 			<button class="btn btn-primary btn-sm w-24 text-neutral mt-1" on:click={login}>Login</button>
 			{message}
 		</div>

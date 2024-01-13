@@ -1,26 +1,33 @@
 <script lang="ts">
 	import '../../app.css';
 	import { RegisterAccount } from '../../classes/register-account.class';
-	import { InputTypes } from '../../components/elements/input/constants/input-types.constants';
-	import { getValidFields } from '../../components/src/functions/get-valid-fields.function';
-	import Input from '../../components/elements/input/input.component.svelte';
 	import axios from 'axios';
-	import { ValidatingFunctions } from '../../components/src/classes/validating-function.class';
 
 	const registerAccount: RegisterAccount = new RegisterAccount();
-	const validFields: any = getValidFields(registerAccount);
 	let message: string = '';
 
+	function isValid() {
+		return (
+			registerAccount.username &&
+			registerAccount.password &&
+			registerAccount.name &&
+			registerAccount.birthdate &&
+			registerAccount.email.includes('@') &&
+			registerAccount.email.includes('.') &&
+			registerAccount.email.split('.')[1]
+		);
+	}
+
 	function register() {
-		if (validFields.isValid()) {
+		if (isValid()) {
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
-				.post('/account', registerAccount)
+				.post('/account/register', registerAccount)
 				.then((res) => {
 					message = res.data.message;
 				})
 				.catch((e) => {
-					message = e.message;
+					message = e.response.data.message;
 				});
 		}
 	}
@@ -30,46 +37,30 @@
 	<div class="card w-96 bg-base-300 shadow-xl">
 		<div class="card-body justify-center items-center">
 			<div class="card-title justify-center items-center text-md">Register</div>
-			<Input
-				label="Username"
-				placeholder="username"
-				className="input input-sm input-bordered rounded-lg"
-				type={InputTypes.TEXT}
-				bind:value={registerAccount.username}
-				bind:valid={validFields.username}
-			/>
-			<Input
-				label="Password"
-				placeholder="password"
-				className="input input-sm input-bordered rounded-lg"
-				type={InputTypes.PASSWORD}
-				bind:value={registerAccount.password}
-				bind:valid={validFields.password}
-			/>
-			<Input
-				label="E-mail"
-				placeholder="e-mail"
-				className="input input-sm input-bordered rounded-lg"
-				type={InputTypes.TEXT}
-				bind:value={registerAccount.email}
-				bind:valid={validFields.email}
-				validatingFunction={ValidatingFunctions.email}
-			/>
-			<Input
-				label="Name"
-				placeholder="name"
-				className="input input-sm input-bordered rounded-lg"
-				type={InputTypes.TEXT}
-				bind:value={registerAccount.name}
-				bind:valid={validFields.name}
-			/>
-			<Input
-				label="Birthdate"
-				className="input input-sm input-bordered rounded-lg"
-				type={InputTypes.DATE}
-				bind:value={registerAccount.birthdate}
-				bind:valid={validFields.birthdate}
-			/>
+			<label class="flex flex-col space-y-1 w-48">
+				<div class="text-sm">Username</div>
+				<input class="input input-sm w-full" bind:value={registerAccount.username} />
+			</label>
+			<label class="flex flex-col space-y-1 w-48">
+				<div class="text-sm">Password</div>
+				<input
+					class="input input-sm w-full"
+					type="password"
+					bind:value={registerAccount.password}
+				/>
+			</label>
+			<label class="flex flex-col space-y-1 w-48">
+				<div class="text-sm">Name</div>
+				<input class="input input-sm w-full" bind:value={registerAccount.name} />
+			</label>
+			<label class="flex flex-col space-y-1 w-48">
+				<div class="text-sm">email</div>
+				<input class="input input-sm w-full" type="email" bind:value={registerAccount.email} />
+			</label>
+			<label class="flex flex-col space-y-1 w-48">
+				<div class="text-sm">Birthdate</div>
+				<input class="input input-sm w-full" type="date" bind:value={registerAccount.birthdate} />
+			</label>
 			<button class="btn btn-primary btn-sm w-24 text-neutral mt-1" on:click={register}
 				>Register</button
 			>

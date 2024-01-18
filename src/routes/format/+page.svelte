@@ -1,32 +1,31 @@
 <script lang="ts">
 	import '../../app.css';
-	import type { TableSetDto } from '../../dto/set/table-set.dto';
+	import type { TableFormatDto } from '../../dto/format/table-format.dto';
 	import { booleanToYesOrNo } from '../../functions/boolean-to-yes-or-no';
-	import { stringDateToMMYYYY } from '../../functions/string-date-to-MM-YYYY';
 	import { Data } from '../../data/data';
 	import DefaultPage from '../../pages/default-page.svelte';
 	import MixedAuthenticateWidget from '../../authenticate/mixed-authenticate-widget.svelte';
 	import { goto } from '$app/navigation';
 
 	let message: string = '';
-	let data: TableSetDto[] = [];
+	let data: TableFormatDto[] = [];
 	let authenticate: boolean = false;
 
 	async function getData() {
-		data = await Data.getTableSets();
+		data = await Data.getTableFormats();
 	}
 
 	function edit(id: number): void {
-		goto(`/set/create?id=${id}`);
+		goto(`/format/create?id=${id}`);
 	}
 
 	async function del(id: number): Promise<void> {
-		await Data.deleteTableSet(id);
+		await Data.deleteTableFormat(id);
 		await getData();
 	}
 
 	function gotoCreate(): void {
-		goto('/sets/create');
+		goto('/format/create');
 	}
 
 	$: authenticate && getData();
@@ -38,7 +37,7 @@
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
 				<div class="w-full card-title justify-center items-center">
-					<div class="text-md">Sets</div>
+					<div class="text-md">Formats</div>
 					<div class="absolute right-8">
 						<button class="btn btn-sm w-20 text-neutral btn-success" on:click={gotoCreate}
 							>Create</button
@@ -49,8 +48,7 @@
 					<thead>
 						<tr>
 							<th>Name</th>
-							<th>Code</th>
-							<th>Release Date</th>
+							<th>Rotate</th>
 							<th>Description</th>
 							<th>Active</th>
 							{#if authenticate}
@@ -59,24 +57,23 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each data as set}
+						{#each data as format}
 							<tr>
-								<td>{set.name}</td>
-								<td>{set.code}</td>
-								<td>{stringDateToMMYYYY(set.releaseDate.toString())}</td>
-								<td class="w-96">{set.description}</td>
-								<td>{booleanToYesOrNo(set.active)}</td>
+								<td>{format.name}</td>
+								<td>{booleanToYesOrNo(format.rotate)}</td>
+								<td>{format.description}</td>
+								<td>{booleanToYesOrNo(format.active)}</td>
 								{#if authenticate}
 									<td class="space-x-2">
 										<button
 											class="btn btn-info btn-sm w-20 text-neutral"
-											on:click={() => edit(set.id)}
+											on:click={() => edit(format.id)}
 										>
 											Edit
 										</button>
 										<button
 											class="btn btn-error btn-sm w-20 text-neutral"
-											on:click={() => del(set.id)}
+											on:click={() => del(format.id)}
 										>
 											Delete
 										</button>

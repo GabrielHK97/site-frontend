@@ -28,7 +28,7 @@
 
 <div class="flex h-screen w-screen justify-center items-center">
 	<div class="card w-96 bg-base-300 shadow-xl">
-		<div class="card-body justify-center items-center">
+		<div class="card-body justify-center items-center space-y-1">
 			<div class="card-title justify-center items-center text-md">Login</div>
 			<label class="flex flex-col space-y-1 w-48">
 				<div class="text-sm">Username</div>
@@ -36,9 +36,13 @@
 			</label>
 			<label class="flex flex-col space-y-1 w-48">
 				<div class="text-sm">Password</div>
-				<input class="input input-sm w-full" type="password" bind:value={loginAccountDto.password} />
+				<input
+					class="input input-sm w-full"
+					type="password"
+					bind:value={loginAccountDto.password}
+				/>
 			</label>
-			<button class="btn btn-primary btn-sm w-24 text-neutral mt-1" on:click={login}>Login</button>
+			<button class="btn btn-primary btn-sm w-24 text-neutral" on:click={login}>Login</button>
 			{message}
 		</div>
 	</div>

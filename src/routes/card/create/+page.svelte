@@ -8,12 +8,11 @@
 	import { CreateCardDto } from '../../../dto/card/create-card.dto';
 	import { CardColorDto } from '../../../dto/card/card-color.dto';
 	import type { CardRarityDto } from '../../../dto/card/card-rarity.dto';
-	import DefaultPage from '../../../pages/default-page.svelte';
 	import type { CardRarityOfSetDto } from '../../../dto/card/card-rarity-of-set.dto';
 	import { Data } from '../../../data/data';
 	import { onMount } from 'svelte';
 	import { DatabaseAxios } from '../../../axios/database-axios';
-	import AuthenticateWidget from '../../../authenticate/authenticate-widget.svelte';
+	import AuthenticatedPage from '../../../pages/authenticated-page.svelte';
 
 	let id: number = NaN;
 
@@ -201,12 +200,13 @@
 	$: authenticate && getData();
 </script>
 
-<DefaultPage>
-	<AuthenticateWidget bind:authenticate />
+<AuthenticatedPage bind:authenticate pageName="Create">
 	<div class="flex w-full flex-grow justify-center items-center">
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
-				<div class="card-title justify-center items-center text-md">{id ? 'Update' : 'Create'} Card</div>
+				<div class="card-title justify-center items-center text-md">
+					{id ? 'Update' : 'Create'} Card
+				</div>
 				<div class="flex flex-row w-full space-x-4">
 					<div class="flex flex-col w-full space-y-2">
 						<label class="flex flex-col space-y-1 w-48">
@@ -333,4 +333,4 @@
 			</div>
 		</div>
 	</div>
-</DefaultPage>
+</AuthenticatedPage>

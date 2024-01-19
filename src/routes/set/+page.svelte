@@ -4,9 +4,9 @@
 	import { booleanToYesOrNo } from '../../functions/boolean-to-yes-or-no';
 	import { stringDateToMMYYYY } from '../../functions/string-date-to-MM-YYYY';
 	import { Data } from '../../data/data';
-	import DefaultPage from '../../pages/default-page.svelte';
-	import MixedAuthenticateWidget from '../../authenticate/mixed-authenticate-widget.svelte';
 	import { goto } from '$app/navigation';
+	import AuthenticatedPage from '../../pages/authenticated-page.svelte';
+	import { onMount } from 'svelte';
 
 	let message: string = '';
 	let data: TableSetDto[] = [];
@@ -29,11 +29,12 @@
 		goto('/sets/create');
 	}
 
-	$: authenticate && getData();
+	onMount(() => {
+		getData();
+	});
 </script>
 
-<DefaultPage>
-	<MixedAuthenticateWidget bind:authenticate />
+<AuthenticatedPage bind:authenticate pageName="Set" allowVisualization={true}>
 	<div class="flex w-full flex-grow justify-center items-center">
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
@@ -89,4 +90,5 @@
 			</div>
 		</div>
 	</div>
-</DefaultPage>
+</AuthenticatedPage>
+

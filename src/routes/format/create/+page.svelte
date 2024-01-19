@@ -2,10 +2,9 @@
 	import '../../../app.css';
 	import axios from 'axios';
 	import { CreateFormatDto } from '../../../dto/format/create-format.dto';
-	import DefaultPage from '../../../pages/default-page.svelte';
-	import AuthenticateWidget from '../../../authenticate/authenticate-widget.svelte';
 	import { onMount } from 'svelte';
 	import { DatabaseAxios } from '../../../axios/database-axios';
+	import AuthenticatedPage from '../../../pages/authenticated-page.svelte';
 
 	let id: number = NaN;
 
@@ -65,8 +64,7 @@
 	});
 </script>
 
-<DefaultPage>
-	<AuthenticateWidget />
+<AuthenticatedPage pageName="Create">
 	<div class="flex w-full flex-grow justify-center items-center">
 		<div class="card w-96 bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
@@ -117,4 +115,5 @@
 			</div>
 		</div>
 	</div>
-</DefaultPage>
+</AuthenticatedPage>
+

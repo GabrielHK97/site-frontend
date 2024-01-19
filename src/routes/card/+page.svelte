@@ -1,11 +1,10 @@
 <script lang="ts">
 	import '../../app.css';
 	import type { TableCardDto } from '../../dto/card/table-card.dto';
-	import DefaultPage from '../../pages/default-page.svelte';
 	import { Data } from '../../data/data';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import MixedAuthenticateWidget from '../../authenticate/mixed-authenticate-widget.svelte';
+	import AuthenticatedPage from '../../pages/authenticated-page.svelte';
 
 	let message: string = '';
 	let data: TableCardDto[] = [];
@@ -33,8 +32,7 @@
 	});
 </script>
 
-<DefaultPage>
-	<MixedAuthenticateWidget bind:authenticate />
+	<AuthenticatedPage bind:authenticate pageName="Card" allowVisualization={true}>
 	<div class="flex w-full flex-grow min-h-max justify-center items-center">
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
@@ -130,4 +128,4 @@
 			</div>
 		</div>
 	</div>
-</DefaultPage>
+</AuthenticatedPage>

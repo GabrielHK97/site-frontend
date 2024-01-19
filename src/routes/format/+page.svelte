@@ -3,9 +3,8 @@
 	import type { TableFormatDto } from '../../dto/format/table-format.dto';
 	import { booleanToYesOrNo } from '../../functions/boolean-to-yes-or-no';
 	import { Data } from '../../data/data';
-	import DefaultPage from '../../pages/default-page.svelte';
-	import MixedAuthenticateWidget from '../../authenticate/mixed-authenticate-widget.svelte';
 	import { goto } from '$app/navigation';
+	import AuthenticatedPage from '../../pages/authenticated-page.svelte';
 
 	let message: string = '';
 	let data: TableFormatDto[] = [];
@@ -31,8 +30,7 @@
 	$: authenticate && getData();
 </script>
 
-<DefaultPage>
-	<MixedAuthenticateWidget bind:authenticate />
+<AuthenticatedPage bind:authenticate pageName="Format" allowVisualization={true}>
 	<div class="flex w-full flex-grow justify-center items-center">
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
@@ -86,4 +84,5 @@
 			</div>
 		</div>
 	</div>
-</DefaultPage>
+</AuthenticatedPage>
+

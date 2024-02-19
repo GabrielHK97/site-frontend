@@ -12,8 +12,9 @@
 	import NavbarBodyComponent from '../components/components/navbar/components/navbar-body-component.svelte';
 	import NavbarTreeComponent from '../components/components/navbar/components/navbar-tree-component.svelte';
 	import NavbarElementComponent from '../components/components/navbar/components/navbar-element-component.svelte';
+	import NavbarHeaderComponent from '../components/components/navbar/components/navbar-header-component.svelte';
 
-	export let authenticate: boolean = false;
+	export let authenticated: boolean = false;
 	export let pageName: string;
 	export let allowVisualization: boolean = false;
 
@@ -21,8 +22,8 @@
 	let navbarElements: NavbarTree[] = $navbar;
 
 	onMount(async () => {
-		authenticate = await Session.validate();
-		if (!authenticate && !allowVisualization) {
+		authenticated = await Session.validate();
+		if (!authenticated && !allowVisualization) {
 			goto('/');
 		}
 	});
@@ -35,47 +36,57 @@
 </script>
 
 <div class="w-screen h-screen flex flex-col">
-	{#if authenticate}
-		<div class="h-12 p-2 bg-base-300 flex justify-end items-center">
-			<div class="flex-grow">
-				<BreadcrumbComponent
-					class="flex flex-row space-x-2"
-					breadcrumbElements={$breadcrumb}
-					bind:pageName
-					bind:currentBreadcrumb
+	{#if authenticated}
+		<div class="flex flex-row h-full">
+			<NavbarComponent class="flex flex-col w-48 h-full">
+				<NavbarHeaderComponent class="w-full h-12 flex flex-col justify-center items-center">
+					<div>BB</div>
+				</NavbarHeaderComponent>
+				<NavbarBodyComponent
+					class="flex w-full flex-col space-y-2 overflow-y-auto flex-1 bg-base-300 p-2"
 				>
-					{#each currentBreadcrumb as breadcrumbElement, i}
-						<BreadcrumbElementComponent
-							class="w-fit hover:underline"
-							bind:currentBreadcrumb
-							bind:breadcrumbElement
-							bind:pageName
+					{#each navbarElements as navbarElement}
+						<NavbarTreeComponent
+							lineColor="border-primary"
+							class="btn btn-primary btn-sm flex h-8 w-full flex-row items-center justify-start space-x-2 rounded-lg p-2 text-neutral text-md font-semibold"
+							bind:navbarElement
 						/>
-						{#if i < currentBreadcrumb.length - 1}
-							<div>{'>'}</div>
-						{/if}
 					{/each}
-				</BreadcrumbComponent>
-			</div>
-			<button class="btn btn-primary btn-sm w-24 text-neutral" on:click={logout}>Logout</button>
-		</div>
-	{/if}
-	<div class="flex flex- row flex-grow">
-		<NavbarComponent class="flex h-full w-48 min-w-[192px] flex-col items-center justify-center">
-			<NavbarBodyComponent
-				class="flex w-full flex-grow flex-col items-start justify-start space-y-2 p-2"
-			>
-				{#each navbarElements as navbarElement}
-					<NavbarTreeComponent
-						class="border-base-300 w-full space-y-2 border-l-2 pl-2"
-						elementClass="bg-base-300 hover:border-base-content flex h-10 w-full flex-row items-center justify-start space-x-2 rounded-lg p-2 hover:border"
-						bind:navbarElement
+				</NavbarBodyComponent>
+			</NavbarComponent>
+			<div class="flex flex-col w-full h-full">
+				<div class="h-12 p-2 bg-base-300 flex justify-end items-center">
+					<div class="w-full">
+						<BreadcrumbComponent
+							class="flex flex-row space-x-2"
+							breadcrumbElements={$breadcrumb}
+							bind:pageName
+							bind:currentBreadcrumb
+						>
+							{#each currentBreadcrumb as breadcrumbElement, i}
+								<BreadcrumbElementComponent
+									class="w-fit hover:underline"
+									bind:currentBreadcrumb
+									bind:breadcrumbElement
+									bind:pageName
+								/>
+								{#if i < currentBreadcrumb.length - 1}
+									<div>{'>'}</div>
+								{/if}
+							{/each}
+						</BreadcrumbComponent>
+					</div>
+					<button
+						class="h-8 btn btn-primary btn-sm w-24 text-neutral text-md font-semibold"
+						on:click={logout}
 					>
-						<NavbarElementComponent />
-					</NavbarTreeComponent>
-				{/each}
-			</NavbarBodyComponent>
-		</NavbarComponent>
+						Logout
+					</button>
+				</div>
+				<slot />
+			</div>
+		</div>
+	{:else}
 		<slot />
-	</div>
+	{/if}
 </div>

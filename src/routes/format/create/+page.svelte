@@ -65,10 +65,12 @@
 </script>
 
 <AuthenticatedPage pageName="Create">
-	<div class="flex w-full flex-grow justify-center items-center">
+	<div class="flex w-full grow justify-center items-center">
 		<div class="card w-96 bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
-				<div class="card-title justify-center items-center text-md">{id ? 'Update' : 'Create'} Format</div>
+				<div class="card-title justify-center items-center text-md">
+					{id ? 'Update' : 'Create'} Format
+				</div>
 				<label class="flex flex-col space-y-1 w-48">
 					<div class="text-sm">Name</div>
 					<input class="input input-sm w-full" bind:value={createFormatDto.name} />
@@ -106,14 +108,15 @@
 					/>
 				</label>
 				<button
-					class="btn btn-primary btn-sm w-24 text-neutral"
+					class="h-8 btn btn-primary btn-sm w-24 text-neutral text-md font-semibold"
 					on:click={() => {
 						id ? update() : create();
-					}}>{id ? 'Update' : 'Create'}</button
+					}}
 				>
+					{id ? 'Update' : 'Create'}
+				</button>
 				{message}
 			</div>
 		</div>
 	</div>
 </AuthenticatedPage>
-

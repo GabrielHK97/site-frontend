@@ -8,14 +8,14 @@ export default {
 		themes: [
 			{
 				mytheme: {
-					primary: '#d946ef',
-					secondary: '#2dd4bf',
-					accent: '#fde047',
-					neutral: '#e7e5e4',
-					'base-100': '#4b5563',
-					info: '#06b6d4',
+					primary: '#3b82f6',
+					secondary: '#a855f7',
+					accent: '#ec4899',
+					neutral: '#e5e7eb',
+					'base-100': '#1e2b30',
+					info: '#22d3ee',
 					success: '#22c55e',
-					warning: '#f59e0b',
+					warning: '#fbbf24',
 					error: '#ef4444'
 				}
 			}

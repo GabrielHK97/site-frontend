@@ -10,7 +10,7 @@
 
 	let message: string = '';
 	let data: TableSetDto[] = [];
-	let authenticate: boolean = false;
+	let authenticated: boolean = false;
 
 	async function getData() {
 		data = await Data.getTableSets();
@@ -34,17 +34,19 @@
 	});
 </script>
 
-<AuthenticatedPage bind:authenticate pageName="Set" allowVisualization={true}>
-	<div class="flex w-full flex-grow justify-center items-center">
+<AuthenticatedPage bind:authenticated pageName="Set" allowVisualization={true}>
+	<div class="flex w-full grow justify-center items-center">
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
 				<div class="w-full card-title justify-center items-center">
 					<div class="text-md">Sets</div>
-					<div class="absolute right-8">
-						<button class="btn btn-sm w-20 text-neutral btn-success" on:click={gotoCreate}
-							>Create</button
-						>
-					</div>
+					{#if authenticated}
+						<div class="absolute right-8">
+							<button class="btn btn-sm w-20 text-neutral btn-success" on:click={gotoCreate}
+								>Create</button
+							>
+						</div>
+					{/if}
 				</div>
 				<table class="table">
 					<thead>
@@ -54,7 +56,7 @@
 							<th>Release Date</th>
 							<th>Description</th>
 							<th>Active</th>
-							{#if authenticate}
+							{#if authenticated}
 								<th>Actions</th>
 							{/if}
 						</tr>
@@ -67,7 +69,7 @@
 								<td>{stringDateToMMYYYY(set.releaseDate.toString())}</td>
 								<td class="w-96">{set.description}</td>
 								<td>{booleanToYesOrNo(set.active)}</td>
-								{#if authenticate}
+								{#if authenticated}
 									<td class="space-x-2">
 										<button
 											class="btn btn-info btn-sm w-20 text-neutral"
@@ -91,4 +93,3 @@
 		</div>
 	</div>
 </AuthenticatedPage>
-

@@ -24,7 +24,7 @@
 	let subtypes: CardSubtypeDto[] = [];
 	let colors: CardColorDto[] = [];
 	let rarities: CardRarityDto[] = [];
-	let authenticate: boolean = false;
+	let authenticated: boolean = false;
 
 	let setIds: number[] = [];
 	let formatIds: number[] = [];
@@ -32,14 +32,6 @@
 	let subtypeIds: number[] = [];
 	let colorIds: number[] = [];
 	let rarityIds: any = {};
-
-	function setIdToObject(e: any, array: any): void {
-		createCardDto.sets = Array.from(e.target.selectedOptions).map((option: any) => {
-			return array.filter((element: any) => {
-				return element.id === option.__value;
-			})[0];
-		});
-	}
 
 	function formatsIdToObject(e: any, array: any): void {
 		createCardDto.formats = Array.from(e.target.selectedOptions).map((option: any) => {
@@ -127,6 +119,7 @@
 
 	function create(): void {
 		if (isValid()) {
+			createCardDto.rarities = createCardDto.rarities.reverse();
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
 				.post('/card', createCardDto, { withCredentials: true })
@@ -141,6 +134,7 @@
 
 	function update(): void {
 		if (isValid()) {
+			createCardDto.rarities = createCardDto.rarities.reverse();
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
 				.patch(`/card/${id}`, createCardDto, { withCredentials: true })
@@ -197,11 +191,11 @@
 		}
 	});
 
-	$: authenticate && getData();
+	$: authenticated && getData();
 </script>
 
-<AuthenticatedPage bind:authenticate pageName="Create">
-	<div class="flex w-full flex-grow justify-center items-center">
+<AuthenticatedPage bind:authenticated pageName="Create">
+	<div class="flex w-full grow justify-center items-center">
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
 				<div class="card-title justify-center items-center text-md">
@@ -314,7 +308,7 @@
 								{/each}
 							</select>
 						</label>
-						<label class="flex flex-col space-y-1 w-48 flex-grow">
+						<label class="flex flex-col space-y-1 w-48 grow">
 							<div class="text-sm">Description</div>
 							<textarea
 								class="textarea textarea-bordered textarea-md h-full"
@@ -324,11 +318,13 @@
 					</div>
 				</div>
 				<button
-					class="btn btn-primary btn-sm w-24 text-neutral"
+					class="h-8 btn btn-primary btn-sm w-24 text-neutral text-md font-semibold"
 					on:click={() => {
 						id ? update() : create();
-					}}>{id ? 'Update' : 'Create'}</button
+					}}
 				>
+					{id ? 'Update' : 'Create'}
+				</button>
 				{message}
 			</div>
 		</div>

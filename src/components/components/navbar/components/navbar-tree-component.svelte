@@ -4,7 +4,7 @@
 	import NavbarElementComponent from './navbar-element-component.svelte';
 
 	export let navbarElement: NavbarTree;
-	export let elementClass: string;
+	export let lineColor: string;
 
 	function expandOrRedirect() {
 		if (navbarElement.elements.length > 0) {
@@ -16,7 +16,7 @@
 </script>
 
 <NavbarElementComponent
-	class={elementClass}
+	class={$$props.class}
 	bind:navbarElement
 	fn={() => {
 		expandOrRedirect();
@@ -25,14 +25,14 @@
 
 {#if navbarElement.expanded}
 	<div class="w-full pl-2">
-		<ul class={$$props.class}>
+		<ul class="{lineColor} w-full space-y-2 border-l-2 pl-2">
 			{#each navbarElement.elements as element}
 				<li class="flex">
 					{#if navbarElement.elements.length > 0}
-						<svelte:self class={$$props.class} navbarElement={element} {elementClass} />
+						<svelte:self class={$$props.class} navbarElement={element} />
 					{:else}
 						<NavbarElementComponent
-							class={elementClass}
+							class={$$props.class}
 							bind:navbarElement
 							fn={() => {
 								expandOrRedirect();

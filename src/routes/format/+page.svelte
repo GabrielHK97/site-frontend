@@ -8,7 +8,7 @@
 
 	let message: string = '';
 	let data: TableFormatDto[] = [];
-	let authenticate: boolean = false;
+	let authenticated: boolean = false;
 
 	async function getData() {
 		data = await Data.getTableFormats();
@@ -27,20 +27,22 @@
 		goto('/format/create');
 	}
 
-	$: authenticate && getData();
+	$: authenticated && getData();
 </script>
 
-<AuthenticatedPage bind:authenticate pageName="Format" allowVisualization={true}>
-	<div class="flex w-full flex-grow justify-center items-center">
+<AuthenticatedPage bind:authenticated pageName="Format" allowVisualization={true}>
+	<div class="flex w-full grow justify-center items-center">
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
 				<div class="w-full card-title justify-center items-center">
 					<div class="text-md">Formats</div>
-					<div class="absolute right-8">
-						<button class="btn btn-sm w-20 text-neutral btn-success" on:click={gotoCreate}
-							>Create</button
-						>
-					</div>
+					{#if authenticated}
+						<div class="absolute right-8">
+							<button class="btn btn-sm w-20 text-neutral btn-success" on:click={gotoCreate}
+								>Create</button
+							>
+						</div>
+					{/if}
 				</div>
 				<table class="table">
 					<thead>
@@ -49,7 +51,7 @@
 							<th>Rotate</th>
 							<th>Description</th>
 							<th>Active</th>
-							{#if authenticate}
+							{#if authenticated}
 								<th>Actions</th>
 							{/if}
 						</tr>
@@ -61,7 +63,7 @@
 								<td>{booleanToYesOrNo(format.rotate)}</td>
 								<td>{format.description}</td>
 								<td>{booleanToYesOrNo(format.active)}</td>
-								{#if authenticate}
+								{#if authenticated}
 									<td class="space-x-2">
 										<button
 											class="btn btn-info btn-sm w-20 text-neutral"
@@ -85,4 +87,3 @@
 		</div>
 	</div>
 </AuthenticatedPage>
-

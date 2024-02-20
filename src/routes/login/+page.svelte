@@ -3,8 +3,15 @@
 	import axios from 'axios';
 	import { goto } from '$app/navigation';
 	import { LoginAccountDto } from '../../dto/account/login-account.dto';
+	import InputRootComponent from '../../components/components/input/components/input-root-component.svelte';
+	import InputLabelComponent from '../../components/components/input/components/input-label-component.svelte';
+	import InputComponent from '../../components/components/input/components/input-component.svelte';
 
 	const loginAccountDto: LoginAccountDto = new LoginAccountDto();
+	loginAccountDto.username.label = 'Username';
+	loginAccountDto.username.placeholder = 'username';
+	loginAccountDto.password.label = 'Password';
+	loginAccountDto.password.placeholder = 'password';
 	let message: string = '';
 
 	function isValid() {
@@ -30,10 +37,16 @@
 	<div class="card w-96 bg-base-300 shadow-xl">
 		<div class="card-body justify-center items-center space-y-1">
 			<div class="card-title justify-center items-center text-md">Login</div>
-			<label class="flex flex-col space-y-1 w-48">
-				<div class="text-sm">Username</div>
-				<input class="input input-sm w-full" bind:value={loginAccountDto.username} />
-			</label>
+			<InputRootComponent class="flex flex-col space-y-1">
+				<InputLabelComponent label={loginAccountDto.username.label} class="text-sm" />
+				<InputComponent
+					label={loginAccountDto.username.label}
+					bind:firstTime={loginAccountDto.username.firstTime}
+					bind:valid={loginAccountDto.username.valid}
+					bind:value={loginAccountDto.username.value}
+					class="input input-sm w-full"
+				/>
+			</InputRootComponent>
 			<label class="flex flex-col space-y-1 w-48">
 				<div class="text-sm">Password</div>
 				<input

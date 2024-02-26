@@ -14,10 +14,10 @@ function transformKeyToObject(obj: any, key: string): void {
 
 
 export function getValidFields(obj: any): any {
-	const keys = getAllKeys(obj);
+	const keys = Object.entries(obj);
 	let validFieldsObject: ValidFieldsObject = new ValidFieldsObject();
 	keys.forEach((k: any) => {
-		transformKeyToObject(validFieldsObject, k);
+		transformKeyToObject(validFieldsObject, k[0]);
 	});	
 	return validFieldsObject;
 }

@@ -33,7 +33,7 @@
 	}
 </script>
 
-<div class="flex h-screen w-screen justify-center items-center">
+<!-- <div class="flex h-screen w-screen justify-center items-center">
 	<div class="card w-96 bg-base-300 shadow-xl">
 		<div class="card-body justify-center items-center space-y-1">
 			<div class="card-title justify-center items-center text-md">Register</div>
@@ -71,4 +71,4 @@
 			{message}
 		</div>
 	</div>
-</div>
+</div> -->

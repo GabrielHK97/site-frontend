@@ -4,7 +4,7 @@
 	import { InputMask } from '../functions/input-mask.function';
 
 	export let type: InputTypes = InputTypes.TEXT;
-	export let label: string = '';
+	export let id: string = '';
 	export let value: any = '';
 	export let placeholder: string = '';
 	export let valid: boolean = false;
@@ -50,7 +50,7 @@
 </script>
 
 <input
-	id={label}
+	id={id}
 	class={`${$$props.class} ${
 		firstTime ? '' : valid ? 'border-success rounded-lg border' : 'border-error rounded-lg border'
 	}`}

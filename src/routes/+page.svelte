@@ -19,9 +19,9 @@
 			<button class="btn btn-primary btn-sm w-24 text-neutral" on:click={redirectToLogin}
 				>Login</button
 			>
-			<button class="btn btn-primary btn-sm w-24 text-neutral" on:click={redirectToRegister}
+			<!-- <button class="btn btn-primary btn-sm w-24 text-neutral" on:click={redirectToRegister}
 				>Register</button
-			>
+			> -->
 		</div>
 	</div>
 </div>

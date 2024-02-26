@@ -6,7 +6,6 @@ export class Input {
 	label: string = '';
 	value: any = '';
 	placeholder: string = '';
-	valid: boolean = false;
 	readonly: boolean = false;
 	mask: string = '';
 	required: boolean = true;

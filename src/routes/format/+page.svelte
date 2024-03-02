@@ -30,7 +30,7 @@
 	$: authenticated && getData();
 </script>
 
-<AuthenticatedPage bind:authenticated pageName="Format" allowVisualization={true}>
+<AuthenticatedPage bind:authenticated allowVisualization={true}>
 	<div class="flex w-full grow justify-center items-center">
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">

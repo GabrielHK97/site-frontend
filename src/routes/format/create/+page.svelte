@@ -64,7 +64,7 @@
 	});
 </script>
 
-<AuthenticatedPage pageName="Create">
+<AuthenticatedPage>
 	<div class="flex w-full grow justify-center items-center">
 		<div class="card w-96 bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">

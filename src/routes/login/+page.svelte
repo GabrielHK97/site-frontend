@@ -46,7 +46,6 @@
 					bind:firstTime={loginAccountDto.username.firstTime}
 					bind:valid={loginValidator.username}
 					bind:value={loginAccountDto.username.value}
-					bind
 					class="input input-sm w-full"
 				/>
 			</InputRootComponent>

@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import type { BreadcrumbElement } from '../classes/breadcrumb.class';
 
-	export let pageName: string;
 	export let currentBreadcrumb: BreadcrumbElement[] = [];
 	export let breadcrumbElements: BreadcrumbElement[];
 
@@ -25,7 +24,6 @@
 			})[0];
 			currentBreadcrumb.push(breadcrumbElement);
 		});
-		pageName = currentBreadcrumb[currentBreadcrumb.length - 1]?.name;
 		currentBreadcrumb = [...currentBreadcrumb];
 	}
 

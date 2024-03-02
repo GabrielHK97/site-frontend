@@ -29,41 +29,60 @@
 		maskedValue = inputMask.maskedValue;
 	};
 
-	function validateField(val: any): boolean {
+	function validateField(): void {
 		valid = required
-			? validatingFunction(val) &&
-				((val !== '' &&
-					(type === InputTypes.TEXT ||
-						type === InputTypes.NUMBER ||
-						type === InputTypes.PASSWORD ||
-						type === InputTypes.DATE)) ||
-					(type === InputTypes.NUMBER_AS_TEXT && val !== 0))
+			? validatingFunction(value) &&
+				((value !== '' &&
+					[
+						InputTypes.TEXT,
+						InputTypes.NUMBER_AS_TEXT,
+						InputTypes.TEXTAREA,
+						InputTypes.DATE,
+						InputTypes.PASSWORD
+					].includes(type)) ||
+					(type === InputTypes.NUMBER && value !== 0))
 			: true;
-		return valid;
 	}
 
 	$: maskedValue = (
 		type === InputTypes.NUMBER_AS_TEXT ? InputMask.mask(value, mask) : { value, maskedValue: value }
 	).maskedValue;
-	$: validateField(value);
+	$: value && validateField();
 	$: if (value) firstTime = false;
 </script>
 
-<input
-	id={id}
-	class={`${$$props.class} ${
-		firstTime ? '' : valid ? 'border-success rounded-lg border' : 'border-error rounded-lg border'
-	}`}
-	type={type === InputTypes.NUMBER_AS_TEXT ? InputTypes.TEXT : type}
-	value={maskedValue}
-	{placeholder}
-	min={0}
-	on:input={handleInput}
-	{readonly}
-	on:focusout={() => {
-		validateField(value);
-		firstTime = false;
-	}}
-	maxlength={mask && mask !== '' ? mask.split('').length : -1}
-	autocomplete="off"
-/>
+{#if type === InputTypes.TEXTAREA}
+	<textarea
+		{id}
+		class={$$props.class}
+		value={maskedValue}
+		{placeholder}
+		on:input={handleInput}
+		{readonly}
+		on:focusout={() => {
+			validateField();
+			firstTime = false;
+		}}
+		maxlength={mask && mask !== '' ? mask.split('').length : -1}
+		autocomplete="off"
+	/>
+{:else}
+	<input
+		{id}
+		class={`${$$props.class} ${
+			firstTime ? '' : valid ? 'border-success border' : 'border-error border'
+		}`}
+		type={type === InputTypes.NUMBER_AS_TEXT ? InputTypes.TEXT : type}
+		value={maskedValue}
+		{placeholder}
+		min={0}
+		on:input={handleInput}
+		{readonly}
+		on:focusout={() => {
+			validateField();
+			firstTime = false;
+		}}
+		maxlength={mask && mask !== '' ? mask.split('').length : -1}
+		autocomplete="off"
+	/>
+{/if}

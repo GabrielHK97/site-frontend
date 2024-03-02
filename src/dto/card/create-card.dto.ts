@@ -1,24 +1,30 @@
-import type { CardFormatDto } from './card-format.dto';
-import type { CardSetDto } from './card-set.dto';
-import type { CardColorDto } from './card-color.dto';
-import type { CardTypeDto } from './card-type.dto';
-import type { CardSubtypeDto } from './card-subtype.dto';
-import type { CardRarityOfSetDto } from './card-rarity-of-set.dto';
+import { Dropdown } from '../../components/components/dropdown/classes/dropdown.class';
+import { Input } from '../../components/components/input/classes/input.class';
 
 export class CreateCardDto {
-	name: string;
-	cost: number;
-	attack: number;
-	defense: number;
-	colors: CardColorDto[];
-	types: CardTypeDto[];
-	subtypes: CardSubtypeDto[];
-	description: string;
-	rarities: CardRarityOfSetDto[];
-	sets: CardSetDto[];
-	formats: CardFormatDto[];
+	name: Input;
+	cost: Input;
+	attack: Input;
+	defense: Input;
+	colors: Dropdown;
+	types: Dropdown;
+	subtypes: Dropdown;
+	description: Input;
+	rarities: Dropdown;
+	sets: Dropdown;
+	formats: Dropdown;
 
 	constructor() {
-		this.rarities = [];
+		this.name = new Input('');
+		this.cost = new Input('');
+		this.attack = new Input('');
+		this.defense = new Input('');
+		this.colors = new Dropdown([]);
+		this.types = new Dropdown([]);
+		this.subtypes = new Dropdown([]);
+		this.description = new Input('');
+		this.rarities = new Dropdown([]);
+		this.sets = new Dropdown([]);
+		this.formats = new Dropdown([]);
 	}
 }

@@ -39,7 +39,7 @@
 	});
 </script>
 
-<AuthenticatedPage bind:authenticated pageName="Card" allowVisualization={true}>
+<AuthenticatedPage bind:authenticated allowVisualization={true}>
 	<div class="flex min-h-0 w-full flex-col p-2 h-full">
 		<div class="flex flex-col min-h-0 space-y-2 card bg-base-300 p-2">
 			<div class="w-full h-8 card-title justify-center items-center">

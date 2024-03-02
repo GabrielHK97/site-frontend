@@ -15,7 +15,6 @@
 	import NavbarHeaderComponent from '../components/components/navbar/components/navbar-header-component.svelte';
 
 	export let authenticated: boolean = false;
-	export let pageName: string;
 	export let allowVisualization: boolean = false;
 
 	let currentBreadcrumb: BreadcrumbElement[] = [];
@@ -60,15 +59,12 @@
 						<BreadcrumbComponent
 							class="flex flex-row space-x-2"
 							breadcrumbElements={$breadcrumb}
-							bind:pageName
 							bind:currentBreadcrumb
 						>
 							{#each currentBreadcrumb as breadcrumbElement, i}
 								<BreadcrumbElementComponent
 									class="w-fit hover:underline"
-									bind:currentBreadcrumb
 									bind:breadcrumbElement
-									bind:pageName
 								/>
 								{#if i < currentBreadcrumb.length - 1}
 									<div>{'>'}</div>

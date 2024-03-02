@@ -14,4 +14,8 @@ export class Input {
 	validatingFunction: ValidatingFunction = () => {
 		return true;
 	};
+
+	constructor(value?: any) {
+		this.value = value;
+	}
 }

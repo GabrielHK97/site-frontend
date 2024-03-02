@@ -2,8 +2,6 @@
 	import { goto } from '$app/navigation';
 	import type { BreadcrumbElement } from '../classes/breadcrumb.class';
 
-	export let pageName: string;
-	export let currentBreadcrumb: BreadcrumbElement[];
 	export let breadcrumbElement: BreadcrumbElement;
 </script>
 
@@ -12,11 +10,8 @@
 <div
 	class={$$props.class}
 	on:click={() => {
-		if (currentBreadcrumb[currentBreadcrumb.length - 1].path !== breadcrumbElement.path)
-			goto(breadcrumbElement.fullPath);
+		goto(breadcrumbElement.fullPath);
 	}}
 >
-	{currentBreadcrumb[currentBreadcrumb.length - 1].path === breadcrumbElement.path
-		? pageName
-		: breadcrumbElement.name}
+	{breadcrumbElement.name}
 </div>

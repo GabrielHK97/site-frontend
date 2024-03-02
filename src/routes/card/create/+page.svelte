@@ -8,118 +8,62 @@
 	import { CreateCardDto } from '../../../dto/card/create-card.dto';
 	import { CardColorDto } from '../../../dto/card/card-color.dto';
 	import type { CardRarityDto } from '../../../dto/card/card-rarity.dto';
-	import type { CardRarityOfSetDto } from '../../../dto/card/card-rarity-of-set.dto';
 	import { Data } from '../../../data/data';
 	import { onMount } from 'svelte';
 	import { DatabaseAxios } from '../../../axios/database-axios';
 	import AuthenticatedPage from '../../../pages/authenticated-page.svelte';
-
+	import InputRootComponent from '../../../components/components/input/components/input-root-component.svelte';
+	import InputLabelComponent from '../../../components/components/input/components/input-label-component.svelte';
+	import InputComponent from '../../../components/components/input/components/input-component.svelte';
+	import { getValidFields } from '../../../components/components/input/functions/get-valid-fields.function';
+	import { InputTypes } from '../../../components/components/input/constants/input-types.constants';
+	import DropdownRootComponent from '../../../components/components/dropdown/components/dropdown-root-component.svelte';
+	import DropdownLabelComponent from '../../../components/components/dropdown/components/dropdown-label-component.svelte';
+	import DropdownComponent from '../../../components/components/dropdown/components/dropdown-component.svelte';
+	import DropdownMenuComponent from '../../../components/components/dropdown/components/dropdown-menu-component.svelte';
+	import DropdownOptionComponent from '../../../components/components/dropdown/components/dropdown-option-component.svelte';
+	import { DropdownOption } from '../../../components/components/dropdown/classes/dropdown-option.class';
+	import DropdownSelectedOptionComponent from '../../../components/components/dropdown/components/dropdown-selected-option-component.svelte';
+	import DropdownUnselectButtonComponent from '../../../components/components/dropdown/components/dropdown-unselect-button-component.svelte';
+	import DropdownSearchComponent from '../../../components/components/dropdown/components/dropdown-search-component.svelte';
 	let id: number = NaN;
 
 	let createCardDto: CreateCardDto = new CreateCardDto();
-	let message: string = '';
+	createCardDto.name.label = 'Name';
+	createCardDto.cost.label = 'Cost';
+	createCardDto.attack.label = 'Attack';
+	createCardDto.defense.label = 'Defense';
+	createCardDto.colors.label = 'Colors';
+	createCardDto.types.label = 'Types';
+	createCardDto.subtypes.label = 'Subtypes';
+	createCardDto.sets.label = 'Sets';
+	createCardDto.rarities.label = 'Rarities';
+	createCardDto.formats.label = 'Formats';
+	createCardDto.description.label = 'Description';
+
+	let cardValidator = getValidFields(createCardDto);
+
 	let sets: CardSetDto[] = [];
 	let formats: CardFormatDto[] = [];
 	let types: CardTypeDto[] = [];
 	let subtypes: CardSubtypeDto[] = [];
 	let colors: CardColorDto[] = [];
 	let rarities: CardRarityDto[] = [];
+
 	let authenticated: boolean = false;
 
-	let setIds: number[] = [];
-	let formatIds: number[] = [];
-	let typeIds: number[] = [];
-	let subtypeIds: number[] = [];
-	let colorIds: number[] = [];
-	let rarityIds: any = {};
+	let message: string = '';
 
-	function formatsIdToObject(e: any, array: any): void {
-		createCardDto.formats = Array.from(e.target.selectedOptions).map((option: any) => {
-			return array.filter((element: any) => {
-				return element.id === option.__value;
-			})[0];
-		});
+	function isSelected(options: DropdownOption[], option: any): boolean {
+		return options.includes(option);
 	}
 
-	function typesIdToObject(e: any, array: any): void {
-		createCardDto.types = Array.from(e.target.selectedOptions).map((option: any) => {
-			return array.filter((element: any) => {
-				return element.id === option.__value;
-			})[0];
-		});
-	}
-
-	function subtypesIdToObject(e: any, array: any): void {
-		createCardDto.subtypes = Array.from(e.target.selectedOptions).map((option: any) => {
-			return array.filter((element: any) => {
-				return element.id === option.__value;
-			})[0];
-		});
-	}
-
-	function colorsIdToObject(e: any, array: any): void {
-		createCardDto.colors = Array.from(e.target.selectedOptions).map((option: any) => {
-			return array.filter((element: any) => {
-				return element.id === option.__value;
-			})[0];
-		});
-	}
-
-	function raritiesHasSet(rarities: CardRarityOfSetDto[], set: CardSetDto): boolean {
-		return (
-			rarities.filter((r) => {
-				return r.set.name === set.name;
-			}).length > 0
-		);
-	}
-
-	function modifyRarity(e: any): void {
-		const currentSetIds = Array.from(e.target.selectedOptions).map((option: any) => {
-			return option.__value;
-		});
-		const setsToCreate = sets.filter((set) => currentSetIds.includes(set.id));
-		createCardDto.sets = setsToCreate;
-		const setsToDelete = sets.filter((set) => !setsToCreate.includes(set));
-		setsToDelete.forEach((set) => {
-			if (raritiesHasSet(createCardDto.rarities, set)) {
-				createCardDto.rarities = createCardDto.rarities.filter((r) => {
-					return r.set.name !== set.name;
-				});
-			}
-		});
-	}
-
-	function setRarity(e: any, set: CardSetDto): void {
-		const id = e.target.selectedOptions[0].__value;
-		const rarity = rarities.filter((r) => {
-			return r.id === id;
-		})[0];
-		raritiesHasSet(createCardDto.rarities, set)
-			? createCardDto.rarities.forEach((r) => {
-					if (r.set.name === set.name) {
-						r.rarity = rarity;
-					}
-				})
-			: createCardDto.rarities.push({ rarity, set });
-		rarityIds[set.name] = id;
-	}
-
-	function isValid(): any {
-		return (
-			createCardDto.name &&
-			createCardDto.cost &&
-			createCardDto.sets.length > 0 &&
-			createCardDto.formats.length > 0 &&
-			createCardDto.rarities.length > 0 &&
-			createCardDto.types.length > 0 &&
-			createCardDto.subtypes.length > 0 &&
-			createCardDto.colors.length > 0
-		);
+	function isValid(): boolean {
+		return cardValidator.isValid();
 	}
 
 	function create(): void {
 		if (isValid()) {
-			createCardDto.rarities = createCardDto.rarities.reverse();
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
 				.post('/card', createCardDto, { withCredentials: true })
@@ -134,7 +78,6 @@
 
 	function update(): void {
 		if (isValid()) {
-			createCardDto.rarities = createCardDto.rarities.reverse();
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
 				.patch(`/card/${id}`, createCardDto, { withCredentials: true })
@@ -148,17 +91,13 @@
 	}
 
 	async function getData(): Promise<void> {
-		sets = await Data.getCardSets();
-		formats = await Data.getCardFormats();
-		types = await Data.getCardTypes();
-		subtypes = await Data.getCardSubtypes();
-		colors = await Data.getCardColors();
-		rarities = await Data.getCardRarities();
-		if (!id) {
-			sets.forEach((set) => {
-				rarityIds[set.name] = 0;
-			});
-		}
+		sets = [...(await Data.getCardSets())];
+		formats = [...(await Data.getCardFormats())];
+		types = [...(await Data.getCardTypes())];
+		subtypes = [...(await Data.getCardSubtypes())];
+		colors = [...(await Data.getCardColors())];
+		console.log(colors);
+		rarities = [...(await Data.getCardRarities())];
 	}
 
 	onMount(async () => {
@@ -170,31 +109,13 @@
 				.then((res) => {
 					return res.data.data;
 				});
-			setIds = createCardDto.sets.map((set) => {
-				return set.id;
-			});
-			formatIds = createCardDto.formats.map((format) => {
-				return format.id;
-			});
-			typeIds = createCardDto.types.map((type) => {
-				return type.id;
-			});
-			subtypeIds = createCardDto.subtypes.map((subtype) => {
-				return subtype.id;
-			});
-			colorIds = createCardDto.colors.map((color) => {
-				return color.id;
-			});
-			createCardDto.rarities.forEach((rarity) => {
-				rarityIds[rarity.set.name] = rarity.rarity.id;
-			});
 		}
 	});
 
 	$: authenticated && getData();
 </script>
 
-<AuthenticatedPage bind:authenticated pageName="Create">
+<AuthenticatedPage bind:authenticated>
 	<div class="flex w-full grow justify-center items-center">
 		<div class="card bg-base-300 shadow-xl">
 			<div class="card-body justify-center items-center">
@@ -203,42 +124,134 @@
 				</div>
 				<div class="flex flex-row w-full space-x-4">
 					<div class="flex flex-col w-full space-y-2">
-						<label class="flex flex-col space-y-1 w-48">
-							<div class="text-sm">Name</div>
-							<input class="input input-sm w-full" bind:value={createCardDto.name} />
-						</label>
-						<label class="flex flex-col space-y-1 w-48">
-							<div class="text-sm">Cost</div>
-							<input class="input input-sm w-full" bind:value={createCardDto.cost} />
-						</label>
-						<label class="flex flex-col space-y-1 w-48">
-							<div class="text-sm">Colors</div>
-							<select
-								multiple
-								class="select select-sm w-full max-h-48"
-								bind:value={colorIds}
-								on:change={(e) => colorsIdToObject(e, colors)}
+						<InputRootComponent class="flex flex-col space-y-1 w-48">
+							<InputLabelComponent label={createCardDto.name.label} class="text-sm" />
+							<InputComponent
+								id={createCardDto.name.label}
+								bind:firstTime={createCardDto.name.firstTime}
+								bind:valid={cardValidator.name}
+								bind:value={createCardDto.name.value}
+								class={`input input-sm w-full h-fit ${
+									createCardDto.name.firstTime
+										? ''
+										: cardValidator.name
+											? 'border-success border'
+											: 'border-error border'
+								}`}
+							/>
+						</InputRootComponent>
+						<InputRootComponent class="flex flex-col space-y-1 w-48">
+							<InputLabelComponent label={createCardDto.cost.label} class="text-sm" />
+							<InputComponent
+								id={createCardDto.cost.label}
+								bind:firstTime={createCardDto.cost.firstTime}
+								bind:valid={cardValidator.cost}
+								bind:value={createCardDto.cost.value}
+								class={`input input-sm w-full h-fit ${
+									createCardDto.cost.firstTime
+										? ''
+										: cardValidator.cost
+											? 'border-success border'
+											: 'border-error border'
+								}`}
+							/>
+						</InputRootComponent>
+						<DropdownRootComponent
+							class="flex flex-col space-y-1 w-48"
+							bind:expanded={createCardDto.colors.expanded}
+						>
+							<DropdownLabelComponent label="Color" class="text-sm" />
+							<DropdownComponent
+								id={createCardDto.colors.label}
+								bind:firstTime={createCardDto.colors.firstTime}
+								bind:selected={createCardDto.colors.value}
+								bind:expanded={createCardDto.colors.expanded}
+								bind:valid={cardValidator.color}
+								multiple={true}
+								class={`input input-sm w-full h-fit min-h-8 ${
+									createCardDto.colors.firstTime
+										? ''
+										: cardValidator.color
+											? 'border-success border'
+											: 'border-error border'
+								}`}
 							>
-								{#each colors as color}
-									<option value={color.id}>{color.name}</option>
-								{/each}
-							</select>
-						</label>
+								<div slot="selected" class="flex flex-row flex-wrap gap-2 p-2">
+									{#each createCardDto.colors.value as selectedColor}
+										<DropdownSelectedOptionComponent
+											class="bg-base-300 w-fit text-sm p-1 rounded-lg"
+											option={selectedColor}
+										>
+											<DropdownUnselectButtonComponent
+												option={selectedColor}
+												bind:selected={createCardDto.colors.value}
+											/>
+										</DropdownSelectedOptionComponent>
+									{/each}
+								</div>
+								<div slot="options">
+									<DropdownMenuComponent
+										class="h-32 flex flex-col w-48 z-0 bg-base-100 overflow-auto rounded-lg"
+									>
+										<DropdownSearchComponent
+											class="input input-sm m-2 bg-base-300"
+											options={colors}
+											label="name"
+											value="id"
+											bind:filtered={createCardDto.colors.filtered}
+										/>
+										{#each createCardDto.colors.filtered as color}
+											<DropdownOptionComponent
+												option={color}
+												bind:selected={createCardDto.colors.value}
+												class={isSelected(createCardDto.colors.value, color) ? 'bg-primary' : ''}
+											/>
+										{/each}
+									</DropdownMenuComponent>
+								</div>
+							</DropdownComponent>
+						</DropdownRootComponent>
 						<div class="flex flex-row space-x-8">
-							<label class="flex flex-col space-y-1 w-20">
-								<div class="text-sm">Attack</div>
-								<input class="input input-sm w-full" bind:value={createCardDto.attack} />
-							</label>
-							<label class="flex flex-col space-y-1 w-20">
-								<div class="text-sm">Defense</div>
-								<input class="input input-sm w-full" bind:value={createCardDto.defense} />
-							</label>
+							<InputRootComponent class="flex flex-col space-y-1 w-20">
+								<InputLabelComponent label={createCardDto.attack.label} class="text-sm" />
+								<InputComponent
+									id={createCardDto.attack.label}
+									bind:firstTime={createCardDto.attack.firstTime}
+									bind:valid={cardValidator.attack}
+									bind:value={createCardDto.attack.value}
+									required={false}
+									class={`input input-sm w-full h-fit ${
+										createCardDto.attack.firstTime
+											? ''
+											: cardValidator.attack
+												? 'border-success border'
+												: 'border-error border'
+									}`}
+								/>
+							</InputRootComponent>
+							<InputRootComponent class="flex flex-col space-y-1 w-20">
+								<InputLabelComponent label={createCardDto.defense.label} class="text-sm" />
+								<InputComponent
+									id={createCardDto.defense.label}
+									bind:firstTime={createCardDto.defense.firstTime}
+									bind:valid={cardValidator.defense}
+									bind:value={createCardDto.defense.value}
+									required={false}
+									class={`input input-sm w-full ${
+										createCardDto.defense.firstTime
+											? ''
+											: cardValidator.defense
+												? 'border-success border'
+												: 'border-error border'
+									}`}
+								/>
+							</InputRootComponent>
 						</div>
-						<label class="flex flex-col space-y-1 w-48">
+						<!-- <label class="flex flex-col space-y-1 w-48">
 							<div class="text-sm">Type</div>
 							<select
 								multiple
-								class="select select-sm w-full max-h-48"
+								class="select select-sm w-full"
 								bind:value={typeIds}
 								on:change={(e) => typesIdToObject(e, types)}
 							>
@@ -259,14 +272,14 @@
 									<option value={subtype.id}>{subtype.name}</option>
 								{/each}
 							</select>
-						</label>
+						</label> -->
 					</div>
 					<div class="flex flex-col w-full space-y-2">
-						<label class="flex flex-col space-y-1 w-48">
+						<!-- <label class="flex flex-col space-y-1 w-48">
 							<div class="text-sm">Sets</div>
 							<select
 								multiple
-								class="select select-sm w-full max-h-48"
+								class="select select-sm w-full"
 								bind:value={setIds}
 								on:change={(e) => typesIdToObject(e, types)}
 								on:change={(e) => modifyRarity(e)}
@@ -277,11 +290,11 @@
 							</select>
 						</label>
 						{#if createCardDto.sets}
-							{#each createCardDto.sets as set}
+							{#each createCardDto.sets.value as set}
 								<div class="flex flex-col space-y-2">
 									<div>{set.name}</div>
 									<select
-										class="select select-sm w-full max-h-48"
+										class="select select-sm w-full"
 										on:change={(e) => setRarity(e, set)}
 										bind:value={rarityIds[set.name]}
 									>
@@ -292,14 +305,14 @@
 									</select>
 								</div>
 							{/each}
-						{/if}
+						{/if} -->
 					</div>
 					<div class="flex flex-col w-full space-y-2">
-						<label class="flex flex-col space-y-1 w-48">
+						<!-- <label class="flex flex-col space-y-1 w-48">
 							<div class="text-sm">Formats</div>
 							<select
 								multiple
-								class="select select-sm w-full max-h-48"
+								class="select select-sm w-full"
 								bind:value={formatIds}
 								on:change={(e) => formatsIdToObject(e, formats)}
 							>
@@ -307,14 +320,25 @@
 									<option value={format.id}>{format.name}</option>
 								{/each}
 							</select>
-						</label>
-						<label class="flex flex-col space-y-1 w-48 grow">
-							<div class="text-sm">Description</div>
-							<textarea
-								class="textarea textarea-bordered textarea-md h-full"
-								bind:value={createCardDto.description}
+						</label> -->
+						<InputRootComponent class="flex flex-col space-y-1 w-48 grow">
+							<InputLabelComponent label={createCardDto.description.label} class="text-sm" />
+							<InputComponent
+								id={createCardDto.description.label}
+								bind:firstTime={createCardDto.description.firstTime}
+								bind:valid={cardValidator.description}
+								bind:value={createCardDto.description.value}
+								type={InputTypes.TEXTAREA}
+								required={false}
+								class={`textarea textarea-bordered textarea-md h-full ${
+									createCardDto.description.firstTime
+										? ''
+										: cardValidator.description
+											? 'border-success border'
+											: 'border-error border'
+								}`}
 							/>
-						</label>
+						</InputRootComponent>
 					</div>
 				</div>
 				<button

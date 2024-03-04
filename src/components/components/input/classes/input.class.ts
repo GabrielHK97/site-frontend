@@ -1,4 +1,4 @@
-import type { ValidatingFunction } from '../../../../shared/interfaces/validating-function.interface';
+import type { ValidatingFunction } from '../interfaces/validating-function.interface';
 import { InputTypes } from '../constants/input-types.constants';
 
 export class Input {

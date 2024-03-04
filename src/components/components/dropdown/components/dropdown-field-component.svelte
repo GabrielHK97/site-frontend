@@ -34,7 +34,7 @@
 
 	$: selected && validateField();
 	$: hasContent = (selected as DropdownOption[]).length;
-	$: value = (selected as DropdownOption).label;
+	$: value = (selected as DropdownOption).label ?? '';
 </script>
 
 <div class="w-full">

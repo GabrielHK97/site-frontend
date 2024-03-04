@@ -9,6 +9,7 @@ export class Dropdown {
 	firstTime: boolean = true;
 	expanded: boolean = false;
 	filtered: DropdownOption[] = [];
+	multiple: boolean = false;
 
 	constructor(value?: any) {
 		this.value = value;

@@ -1,13 +1,20 @@
 <script lang="ts">
+	import { getContext } from 'svelte';
 	import { DropdownOption } from '../classes/dropdown-option.class';
+	import type { Writable } from 'svelte/store';
+	import type { Dropdown } from '../classes/dropdown.class';
+	import type { OnChangeFunction } from '../interfaces/on-change.interface';
 
-	export let option: DropdownOption = new DropdownOption();
-	export let selected: DropdownOption[] = [];
+	export let selectedOption = DropdownOption;
+	let context = getContext<Writable<Dropdown>>('dropdown');
+	let onChange = getContext<Writable<OnChangeFunction>>('onChange');
 
 	function removeSelectedOption() {
-		selected.splice(selected.indexOf(option), 1);
-		selected = [...selected];
+		$context.value.splice($context.value.indexOf(selectedOption), 1);
+		$context.value = [...$context.value];
 	}
+
+	$: $context.value && $onChange($context.value);
 </script>
 
 <button

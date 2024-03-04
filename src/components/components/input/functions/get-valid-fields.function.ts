@@ -13,7 +13,7 @@ function transformKeyToObject(obj: any, key: string): void {
 }
 
 
-export function getValidFields(obj: any): any {
+export function getValidFields(obj: any = {}): any {
 	const keys = Object.entries(obj);
 	let validFieldsObject: ValidFieldsObject = new ValidFieldsObject();
 	keys.forEach((k: any) => {

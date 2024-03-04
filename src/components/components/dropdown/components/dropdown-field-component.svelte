@@ -1,76 +1,74 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { getContext } from 'svelte';
 	import { DropdownOption } from '../classes/dropdown-option.class';
+	import type { Writable } from 'svelte/store';
+	import type { Dropdown } from '../classes/dropdown.class';
+	import type { OnChangeFunction } from '../interfaces/on-change.interface';
 
-	export let id: string = '';
-	export let firstTime: boolean = true;
-	export let placeholder: string = '';
-	export let valid: boolean = false;
-	export let readonly: boolean = false;
-	export let selected: DropdownOption | DropdownOption[] = new DropdownOption();
-	export let multiple: boolean = false;
-	export let required: boolean = true;
-	export let expanded: boolean = false;
+	let context = getContext<Writable<Dropdown>>('dropdown');
+	let valid = getContext<Writable<boolean>>('valid');
+	let onChange = getContext<Writable<OnChangeFunction>>('onChange');
 
 	const handleInput = (e: any) => {
-		firstTime = false;
+		$context.firstTime = false;
 	};
 
 	function expand(): void {
-		if (!readonly) {
-			firstTime = false;
-			expanded = !expanded;
+		if (!$context.readonly) {
+			$context.firstTime = false;
+			$context.expanded = !$context.expanded;
 		}
 	}
 
 	function validateField(): void {
-		valid =
-			((!multiple && (selected as DropdownOption).value) ||
-				(selected as DropdownOption[]).length > 0) &&
-			required
+		$valid =
+			((!$context.multiple && ($context.value as DropdownOption).value) ||
+				($context.value as DropdownOption[]).length > 0) &&
+			$context.required
 				? true
 				: false;
 	}
 
-	$: selected && validateField();
-	$: hasContent = (selected as DropdownOption[]).length;
-	$: value = (selected as DropdownOption).label ?? '';
+	$: $context.value && validateField();
+	$: $context.value && $onChange($context.value);
+	$: hasContent = ($context.value as DropdownOption[]).length;
+	$: value = ($context.value as DropdownOption).label ?? '';
 </script>
 
 <div class="w-full">
-	{#if multiple}
+	{#if $context.multiple}
 		<button
 			class={$$props.class}
 			on:focusout={() => {
 				validateField();
-				firstTime = false;
+				$context.firstTime = false;
 			}}
 			on:click={expand}
 		>
 			{#if hasContent === 0}
-				{placeholder}
+				{$context.placeholder}
 			{:else}
 				<slot name="selected" />
 			{/if}
 		</button>
 	{:else}
 		<input
-			{id}
+			id={$context.label}
 			class={$$props.class}
 			type="text"
-			{placeholder}
+			placeholder={$context.placeholder}
 			on:input={handleInput}
-			{readonly}
+			readonly={$context.readonly}
 			on:focusout={() => {
 				validateField();
-				firstTime = false;
+				$context.firstTime = false;
 			}}
 			on:click={expand}
 			autocomplete="off"
 			{value}
 		/>
 	{/if}
-	<div class={`absolute ${expanded ? 'block' : 'hidden'}`}>
+	<div class={`absolute ${$context.expanded ? 'block' : 'hidden'}`}>
 		<slot name="options" />
 	</div>
 </div>

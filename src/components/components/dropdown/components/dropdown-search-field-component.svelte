@@ -1,30 +1,23 @@
 <script lang="ts">
+	import { getContext } from 'svelte';
 	import { DropdownOption } from '../classes/dropdown-option.class';
-
-	export let filtered: DropdownOption[] = [];
-	export let options: any = [];
-	export let label: string = 'label';
-	export let value: string = 'value';
+	import type { Writable } from 'svelte/store';
+	import type { Dropdown } from '../classes/dropdown.class';
 
 	let searchTerm: string = '';
-	let dropdownOptions: DropdownOption[];
 
-	$: dropdownOptions = [
-		...options.map((option) => {
-			return new DropdownOption(option[label], option[value]);
-		})
-	];
+	let context = getContext<Writable<Dropdown>>('dropdown');
 
-	$: filtered = dropdownOptions;
+	$: $context.filtered = $context.options;
 
 	function filter() {
-		filtered = searchTerm
+		$context.filtered = searchTerm
 			? [
-					...dropdownOptions.filter((option) => {
+					...$context.options.filter((option) => {
 						return option.label.includes(searchTerm);
 					})
 				]
-			: [...dropdownOptions];
+			: [...$context.options];
 	}
 </script>
 

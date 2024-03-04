@@ -1,7 +1,7 @@
 import { Dropdown } from '../../components/components/dropdown/classes/dropdown.class';
 import { Input } from '../../components/components/input/classes/input.class';
 
-export class CreateCardDto {
+export class FormCardDto {
 	name: Input;
 	cost: Input;
 	attack: Input;

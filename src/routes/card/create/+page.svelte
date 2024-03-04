@@ -1,13 +1,14 @@
 <script lang="ts">
 	import '../../../app.css';
 	import axios from 'axios';
-	import { CardSetDto } from '../../../dto/card/card-set.dto';
-	import type { CardFormatDto } from '../../../dto/card/card-format.dto';
-	import type { CardTypeDto } from '../../../dto/card/card-type.dto';
-	import type { CardSubtypeDto } from '../../../dto/card/card-subtype.dto';
-	import { CreateCardDto } from '../../../dto/card/create-card.dto';
+	import { FormCardDto } from '../../../dto/card/form-card.dto';
 	import { CardColorDto } from '../../../dto/card/card-color.dto';
-	import type { CardRarityDto } from '../../../dto/card/card-rarity.dto';
+	import { CardTypeDto } from '../../../dto/card/card-type.dto';
+	import { CardSubtypeDto } from '../../../dto/card/card-subtype.dto';
+	import { CardFormatDto } from '../../../dto/card/card-format.dto';
+	import { CardSetDto } from '../../../dto/card/card-set.dto';
+	import { CardRarityOfSetDto } from '../../../dto/card/card-rarity-of-set.dto';
+	import { CardRarityDto } from '../../../dto/card/card-rarity.dto';
 	import { Data } from '../../../data/data';
 	import { onMount } from 'svelte';
 	import { DatabaseAxios } from '../../../axios/database-axios';
@@ -15,35 +16,24 @@
 	import { getValidFields } from '../../../components/components/input/functions/get-valid-fields.function';
 	import { InputTypes } from '../../../components/components/input/constants/input-types.constants';
 	import { Styled } from '../../../styled-components/styled-components.index';
+	import { DropdownOption } from '../../../components/components/dropdown/classes/dropdown-option.class';
 	let id: number = NaN;
 
-	let createCardDto: CreateCardDto = new CreateCardDto();
-	createCardDto.name.label = 'Name';
-	createCardDto.cost.label = 'Cost';
-	createCardDto.attack.label = 'Attack';
-	createCardDto.defense.label = 'Defense';
-	createCardDto.colors.label = 'Colors';
-	createCardDto.types.label = 'Types';
-	createCardDto.subtypes.label = 'Subtypes';
-	createCardDto.sets.label = 'Sets';
-	createCardDto.formats.label = 'Formats';
-	createCardDto.description.label = 'Description';
+	let formCardDto: FormCardDto = new FormCardDto();
+	formCardDto.name.label = 'Name';
+	formCardDto.cost.label = 'Cost';
+	formCardDto.attack.label = 'Attack';
+	formCardDto.defense.label = 'Defense';
+	formCardDto.description.label = 'Description';
+	formCardDto.colors.multiple = true;
+	formCardDto.types.multiple = true;
+	formCardDto.subtypes.multiple = true;
+	formCardDto.sets.multiple = true;
+	formCardDto.formats.multiple = true;
+	let cardValidator = getValidFields(formCardDto);
 
-	createCardDto.colors.multiple = true;
-	createCardDto.types.multiple = true;
-	createCardDto.subtypes.multiple = true;
-	createCardDto.sets.multiple = true;
-	createCardDto.rarities.multiple = false;
-	createCardDto.formats.multiple = true;
-
-	let cardValidator = getValidFields(createCardDto);
-
-	let sets: CardSetDto[] = [];
-	let formats: CardFormatDto[] = [];
-	let types: CardTypeDto[] = [];
-	let subtypes: CardSubtypeDto[] = [];
-	let colors: CardColorDto[] = [];
-	let rarities: CardRarityDto[] = [];
+	let rarities: CardRarityOfSetDto[] = [];
+	let raritiesValidator = getValidFields(rarities);
 
 	let authenticated: boolean = false;
 
@@ -57,7 +47,7 @@
 		if (isValid()) {
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
-				.post('/card', createCardDto, { withCredentials: true })
+				.post('/card', formCardDto, { withCredentials: true })
 				.then((res) => {
 					message = res.data.message;
 				})
@@ -71,7 +61,7 @@
 		if (isValid()) {
 			axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 			axios
-				.patch(`/card/${id}`, createCardDto, { withCredentials: true })
+				.patch(`/card/${id}`, formCardDto, { withCredentials: true })
 				.then((res) => {
 					message = res.data.message;
 				})
@@ -82,20 +72,43 @@
 	}
 
 	async function getData(): Promise<void> {
-		sets = [...(await Data.getCardSets())];
-		formats = [...(await Data.getCardFormats())];
-		types = [...(await Data.getCardTypes())];
-		subtypes = [...(await Data.getCardSubtypes())];
-		colors = [...(await Data.getCardColors())];
-		console.log(colors);
-		rarities = [...(await Data.getCardRarities())];
+		formCardDto.sets.options = [
+			...(await Data.getCardSets()).map((el) => {
+				return new DropdownOption(el.name, el.id);
+			})
+		];
+		formCardDto.formats.options = [
+			...(await Data.getCardFormats()).map((el) => {
+				return new DropdownOption(el.name, el.id);
+			})
+		];
+		formCardDto.types.options = [
+			...(await Data.getCardTypes()).map((el) => {
+				return new DropdownOption(el.name, el.id);
+			})
+		];
+		formCardDto.subtypes.options = [
+			...(await Data.getCardSubtypes()).map((el) => {
+				return new DropdownOption(el.name, el.id);
+			})
+		];
+		formCardDto.colors.options = [
+			...(await Data.getCardColors()).map((el) => {
+				return new DropdownOption(el.name, el.id);
+			})
+		];
+		formCardDto.rarities.options = [
+			...(await Data.getCardRarities()).map((el) => {
+				return new DropdownOption(el.name, el.id);
+			})
+		];
 	}
 
 	onMount(async () => {
 		const params = new URLSearchParams(window.location.search);
 		id = Number.parseInt(params.get('id') ?? '');
 		if (id) {
-			createCardDto = await DatabaseAxios.getAxios()
+			formCardDto = await DatabaseAxios.getAxios()
 				.get(`/card/${id}`)
 				.then((res) => {
 					return res.data.data;
@@ -105,7 +118,33 @@
 
 	$: authenticated && getData();
 
-	$: console.log(createCardDto.sets.value);
+	function raritiesHasSet(rarities: CardRarityOfSetDto[], set: CardSetDto): boolean {
+		return (
+			rarities.filter((r) => {
+				return r.set.name === set.name;
+			}).length > 0
+		);
+	}
+
+	function setRarity(e: any, set: CardSetDto): void {
+		console.log('hello');
+		// context.value.includes(option)
+		// 		? context.value.splice(context.value.indexOf(option), 1)
+		// 		: context.value.push(option);
+	}
+
+	$: colors = formCardDto.colors.value.map((el) => {
+		return new CardColorDto(el.value, el.label);
+	});
+	$: types = formCardDto.colors.value.map((el) => {
+		return new CardTypeDto(el.value, el.label);
+	});
+	$: subtypes = formCardDto.colors.value.map((el) => {
+		return new CardSubtypeDto(el.value, el.label);
+	});
+	$: formats = formCardDto.colors.value.map((el) => {
+		return new CardFormatDto(el.value, el.label);
+	});
 </script>
 
 <AuthenticatedPage bind:authenticated>
@@ -117,84 +156,52 @@
 				</div>
 				<div class="flex flex-row w-full space-x-4">
 					<div class="flex flex-col w-full space-y-2">
-						<Styled.Input props={createCardDto.name} valid={cardValidator.name} />
-						<Styled.Input props={createCardDto.cost} valid={cardValidator.cost} />
-						<Styled.Dropdown
-							bind:props={createCardDto.colors}
-							bind:valid={cardValidator.colors}
-							options={colors}
-							label="name"
-							value="id"
-						/>
+						<Styled.Input props={formCardDto.name} bind:valid={cardValidator.name} />
+						<Styled.Input props={formCardDto.cost} bind:valid={cardValidator.cost} />
+						<Styled.Dropdown bind:props={formCardDto.colors} bind:valid={cardValidator.colors} />
 						<div class="flex flex-row space-x-8">
 							<Styled.Input
 								width="w-20"
-								props={createCardDto.attack}
-								valid={cardValidator.attack}
+								props={formCardDto.attack}
+								bind:valid={cardValidator.attack}
 							/>
 							<Styled.Input
 								width="w-20"
-								props={createCardDto.defense}
-								valid={cardValidator.defense}
+								props={formCardDto.defense}
+								bind:valid={cardValidator.defense}
 							/>
 						</div>
+						<Styled.Dropdown bind:props={formCardDto.types} bind:valid={cardValidator.types} />
 						<Styled.Dropdown
-							bind:props={createCardDto.types}
-							bind:valid={cardValidator.types}
-							options={types}
-							label="name"
-							value="id"
-						/>
-						<Styled.Dropdown
-							bind:props={createCardDto.subtypes}
+							bind:props={formCardDto.subtypes}
 							bind:valid={cardValidator.subtypes}
-							options={colors}
-							label="name"
-							value="id"
 						/>
 					</div>
 					<div class="flex flex-col w-full space-y-2">
-						<Styled.Dropdown
-							bind:props={createCardDto.sets}
-							bind:valid={cardValidator.sets}
-							options={sets}
-							label="name"
-							value="id"
-						/>
-						{#if createCardDto.sets}
-							{#each createCardDto.sets.value as set}
+						<Styled.Dropdown bind:props={formCardDto.sets} bind:valid={cardValidator.sets} />
+						{#if formCardDto.sets}
+							{#each formCardDto.sets.value as set}
 								<div class="flex flex-col space-y-2">
 									<div>{set.label}</div>
 									<Styled.Dropdown
-										bind:props={createCardDto.rarities}
+										bind:props={formCardDto.rarities}
 										bind:valid={cardValidator.rarities}
-										options={rarities}
-										label="name"
-										value="id"
+										onChange={(selected) => {
+											console.log(selected);
+											setRarity(formCardDto.rarities.value, set);
+										}}
 									/>
 								</div>
 							{/each}
 						{/if}
 					</div>
 					<div class="flex flex-col w-full space-y-2 h-full">
-						<!-- <label class="flex flex-col space-y-1 w-48">
-							<div class="text-sm">Formats</div>
-							<select
-								multiple
-								class="select select-sm w-full"
-								bind:value={formatIds}
-								on:change={(e) => formatsIdToObject(e, formats)}
-							>
-								{#each formats as format}
-									<option value={format.id}>{format.name}</option>
-								{/each}
-							</select>
-						</label> -->
+						<Styled.Dropdown bind:props={formCardDto.formats} bind:valid={cardValidator.formats} />
 						<Styled.Input
 							width="w-48"
 							height="h-full"
-							props={createCardDto.description}
-							valid={cardValidator.description}
+							props={formCardDto.description}
+							bind:valid={cardValidator.description}
 							type={InputTypes.TEXTAREA}
 						/>
 					</div>
